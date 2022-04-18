@@ -1,0 +1,17 @@
+.idea/
+.vscode/
+.vs/
+build/
+cmake-build-*/
+
+*.a
+*.dll
+*.idb
+*.ilk
+*.lib
+*.log
+*.exe
+*.out
+*.pdb
+*.o
+*.so
