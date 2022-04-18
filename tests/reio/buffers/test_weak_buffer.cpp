@@ -79,7 +79,44 @@ TEST_CASE( "weak buffer supports copy/move semantics", "[buffer][weak_buffer]" )
 }
 
 
-TEST_CASE( "weak buffer data can be accessed", "[buffer][weak_buffer]" ) {
+TEST_CASE( "weak buffer has iterator methods", "[buffer][weak_buffer]" ) {
+
+    std::array<std::uint8_t, 20> junk{ 0u };
+    std::ranges::generate(junk, [n = 0]() mutable { return ++n; });
+    weak_buffer buffer{ junk.data(), junk.size() };
+
+    SECTION( "has begin iterator method" ) {
+
+        CHECK( *buffer.begin() + 00 == 01u );
+        CHECK( *buffer.begin() + 01 == 02u );
+        CHECK( *buffer.begin() + 19 == 20u );
+
+    }
+
+    SECTION( "has end iterator method" ) {
+
+        CHECK( buffer.end() == buffer.begin() + buffer.length() );
+
+        CHECK( *(buffer.end() - 01) == 20u );
+        CHECK( *(buffer.end() - 02) == 19u );
+        CHECK( *(buffer.end() - 20) == 01u );
+
+    }
+
+    SECTION( "can be used in range-for" ) {
+
+        std::size_t i = 0u;
+
+        for (auto b : buffer) {
+            CHECK( b == ++i );
+        }
+
+    }
+
+}
+
+
+TEST_CASE( "weak buffer provides byte access", "[buffer][weak_buffer]" ) {
 
     std::array<std::uint8_t, 32> junk{ 0u };
     std::ranges::generate(junk, [n = 0]() mutable { return ++n; });
@@ -118,7 +155,7 @@ TEST_CASE( "weak buffer data can be accessed", "[buffer][weak_buffer]" ) {
 }
 
 
-TEST_CASE( "weak buffer can be viewed in part", "[buffer][weak_buffer]" ) {
+TEST_CASE( "weak buffer provides partial access", "[buffer][weak_buffer]" ) {
 
     std::array<std::uint8_t, 10> junk{ 0u };
     std::ranges::generate(junk, [n = 0]() mutable { return ++n; });
@@ -199,43 +236,6 @@ TEST_CASE( "weak buffer can be viewed in part", "[buffer][weak_buffer]" ) {
         CHECK( view[3] == 10 );
 
         CHECK_THROWS_AS( view.last_from(22), io_exception );
-
-    }
-
-}
-
-
-TEST_CASE( "weak buffer has iterator methods", "[buffer][weak_buffer]" ) {
-
-    std::array<std::uint8_t, 20> junk{ 0u };
-    std::ranges::generate(junk, [n = 0]() mutable { return ++n; });
-    weak_buffer buffer{ junk.data(), junk.size() };
-
-    SECTION( "has begin iterator method" ) {
-
-        CHECK( *buffer.begin() + 00 == 01u );
-        CHECK( *buffer.begin() + 01 == 02u );
-        CHECK( *buffer.begin() + 19 == 20u );
-
-    }
-
-    SECTION( "has end iterator method" ) {
-
-        CHECK( buffer.end() == buffer.begin() + buffer.length() );
-
-        CHECK( *(buffer.end() - 01) == 20u );
-        CHECK( *(buffer.end() - 02) == 19u );
-        CHECK( *(buffer.end() - 20) == 01u );
-
-    }
-
-    SECTION( "can be used in range-for" ) {
-
-        std::size_t i = 0u;
-
-        for (auto b : buffer) {
-            CHECK( b == ++i );
-        }
 
     }
 

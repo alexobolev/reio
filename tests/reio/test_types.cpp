@@ -2,7 +2,7 @@
 using namespace reio;
 
 
-TEST_CASE( "bswap swaps unsigned integers" ) {
+TEST_CASE( "bswap swaps unsigned integers", "[types][byteswap]" ) {
 
     SECTION( "8-bits remain the same" ) {
         CHECK( bswap<uint8_t>(0x00) == 0x00 );
@@ -31,7 +31,7 @@ TEST_CASE( "bswap swaps unsigned integers" ) {
 }
 
 
-TEST_CASE( "bswap swaps signed integers" ) {
+TEST_CASE( "bswap swaps signed integers", "[types][byteswap]" ) {
 
     SECTION( "8-bits remain the same" ) {
         CHECK( bswap<int8_t>(0) == 0 );

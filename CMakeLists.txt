@@ -31,6 +31,9 @@ if (REIO_BUILD_TESTS)
     target_link_libraries(reio_tests        PRIVATE reio)
     target_include_directories(reio_tests   PRIVATE ${REIO_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/external)
 
-    add_test(NAME reio_tests COMMAND reio_tests)
+    list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/external/Catch2/extras)
+    include(CTest)
+    include(Catch)
+    catch_discover_tests(reio_tests)
 
 endif()
