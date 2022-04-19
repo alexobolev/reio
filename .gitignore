@@ -3,6 +3,8 @@
 .vs/
 build/
 cmake-build-*/
+docs/html/
+docs/latex/
 
 *.a
 *.dll
