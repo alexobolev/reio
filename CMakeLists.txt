@@ -11,11 +11,13 @@ set(REIO_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 set(REIO_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
 
 set(REIO_SOURCES
+        ${REIO_INCLUDE_DIR}/reio/allocators.hpp
         ${REIO_INCLUDE_DIR}/reio/asserts.hpp
         ${REIO_INCLUDE_DIR}/reio/types.hpp
         ${REIO_INCLUDE_DIR}/reio/buffers/weak_buffer.hpp
         ${REIO_INCLUDE_DIR}/reio/buffers/owning_buffer.hpp
 
+        ${REIO_SOURCE_DIR}/allocators.cpp
         ${REIO_SOURCE_DIR}/buffers/owning_buffer.cpp
         )
 

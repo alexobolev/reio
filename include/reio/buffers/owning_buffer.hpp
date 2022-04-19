@@ -1,6 +1,7 @@
 #ifndef REIO_OWNING_BUFFER_HPP
 #define REIO_OWNING_BUFFER_HPP
 
+#include "../allocators.hpp"
 #include "../asserts.hpp"
 #include "../types.hpp"
 #include "../buffers/weak_buffer.hpp"
@@ -8,34 +9,28 @@
 
 namespace reio {
 
-    class base_allocator {
-    public:
-        virtual ~base_allocator() = default;
-        virtual byte* allocate(std::size_t size) = 0;
-        virtual void deallocate(byte* ptr) = 0;
-    };
-
-    class default_allocator final
-        : public base_allocator
-    {
-    public:
-
-        byte* allocate(std::size_t size) override;
-        void deallocate(byte* ptr) override;
-
-        static inline default_allocator* get_default() noexcept {
-            static default_allocator instance;
-            return &instance;
-        }
-    };
-
+    ///
+    /// Buffer expansion policy for use in owning_buffer,
+    /// possible derivatives, and in-memory streams.
+    ///
+    /// @see        k_default_growth_factor
+    ///
     enum class growth_factor : uint32_t {
-        none = 1,
-        tight = 2,
-        mult2x = 3
+        none = 1,               //< Buffer cannot expand anymore.
+        tight = 2,              //< Buffer expands only as much as necessary.
+        mult2x = 3              //< Buffer expands linearly, with double coefficient.
     };
 
+    static constexpr auto k_default_growth_factor = growth_factor::mult2x;
 
+
+    ///
+    /// @brief      Dynamically-sized contiguous byte sequence
+    ///             which manages its own allocations.
+    ///
+    /// The go-to buffer for dynamic blob allocations that could be seen
+    /// as a simpler in-codebase alternative to vector<byte>. @n
+    ///
     class owning_buffer final : public non_copyable {
 
     public:
@@ -75,6 +70,7 @@ namespace reio {
         [[nodiscard]] size_type length() const noexcept;
         [[nodiscard]] size_type capacity() const noexcept;
         [[nodiscard]] growth_factor growth() const noexcept;
+        [[nodiscard]] alloc_ptr allocator() const noexcept;
 
         void set_growth(growth_factor factor) noexcept;
 
@@ -177,12 +173,12 @@ namespace reio {
 
         const difference_type old_length = m_end - m_begin;
 
-        const difference_type space_available = m_alloc_end - dest_begin;
+        const difference_type space_available = m_alloc_end - m_end;
         const difference_type write_length = src_end - src_begin;
         const difference_type write_offset = dest_begin - cbegin();
 
         if (write_length > space_available) {
-            const auto min_capacity = static_cast<size_type>(write_offset + write_length);
+            const auto min_capacity = static_cast<size_type>(old_length + write_length);
             const auto new_capacity = next_capacity(/*over:*/min_capacity);
             do_realloc(new_capacity);
         }
@@ -193,7 +189,8 @@ namespace reio {
         std::shift_right(dest_iter, m_alloc_end, write_length);
         std::copy(src_begin, src_end, dest_iter);
 
-        m_end = m_begin + std::max<difference_type>(old_length, write_offset + write_length);
+//        m_end = m_begin + std::max<difference_type>(old_length, write_offset + write_length);
+        m_end = m_begin + old_length + write_length;
         return dest_iter + write_length;
     }
 
