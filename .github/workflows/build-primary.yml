@@ -1,0 +1,67 @@
+name: build-primary
+
+on:
+  push:
+    branches:
+      - main
+      - devel
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+    branches:
+      - main
+      - devel
+
+jobs:
+  build:
+    name: Build ${{ matrix.build_type }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-latest
+          - ubuntu-latest
+        build_type:
+          - DEBUG
+          - RELEASE
+        include:
+          - os: windows-latest
+            generator: "Visual Studio 17 2022"
+            cc: "cl"
+            cxx: "cl"
+          - os: ubuntu-latest
+            generator: "Unix Makefiles"
+            cc: "gcc-11"
+            cxx: "g++-11"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Visual Studio environment (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          & 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat'
+      - name: Setup a newer GCC version (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        run: |
+          sudo apt update
+          sudo apt install gcc-11 g++-11
+      - name: Configure CMake
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+        run: |
+          mkdir cmake-build-${{ matrix.build_type }}
+          cd cmake-build-${{ matrix.build_type }}
+          cmake .. -G "${{ matrix.generator }}" -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+      - name: Build library and tests
+        run: |
+          cd cmake-build-${{ matrix.build_type }}
+          cmake --build .
+      - name: Run tests
+        run: |
+          cd cmake-build-${{ matrix.build_type }}
+          ctest .
