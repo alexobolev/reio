@@ -14,7 +14,8 @@
 #endif
 
 
-namespace reio {
+namespace reio
+{
 
     using byte = unsigned char;
 
@@ -53,7 +54,8 @@ namespace reio {
     /// Implemented to try to compile down to a single instruction or even a compile-time operation.
     ///
     template<regular_numeric_type T>
-    constexpr auto bswap(T v) noexcept {
+    constexpr auto bswap(T v) noexcept
+    {
         const auto size = sizeof(v);
 
         if constexpr (size == 1) return v;
@@ -71,7 +73,8 @@ namespace reio {
     /// Common mixin for classes which shouldn't be copied,
     /// and where move logic should thus be implemented individually.
     ///
-    class non_copyable {
+    class non_copyable
+    {
     public:
         non_copyable() = default;
         non_copyable(const non_copyable&) = delete;
@@ -92,7 +95,8 @@ namespace reio {
     /// Minimum information required to uniquely identify
     /// a location of a method/function call within the codebase.
     ///
-    struct code_location final {
+    struct code_location final
+    {
         long            m_line;
         const char*     m_file;
         const char*     m_func;
@@ -109,7 +113,8 @@ namespace reio {
     /// Exception class which is thrown by the default
     /// assert handler (@c REIO_FAIL).
     ///
-    class io_exception : public std::exception {
+    class io_exception : public std::exception
+    {
     protected:
 
         code_location   m_location{};

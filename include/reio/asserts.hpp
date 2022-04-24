@@ -5,7 +5,7 @@
 #ifndef REIO_OPTION_CUSTOM_FAIL
 
     #define REIO_FAIL(MSG, FILE, LINE, FUNC) \
-        throw ::reio::io_exception{ { LINE, FILE, FUNC }, MSG };
+        throw ::reio::io_exception{ { LINE, FILE, FUNC }, MSG }
 
 #endif // REIO_OPTION_CUSTOM_FAIL
 

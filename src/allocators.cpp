@@ -1,6 +1,7 @@
 #include "reio/allocators.hpp"
 
-namespace reio {
+namespace reio
+{
 
     byte* default_allocator::allocate(std::size_t size)
     {

@@ -7,7 +7,8 @@
 #include "../buffers/weak_buffer.hpp"
 
 
-namespace reio {
+namespace reio
+{
 
     ///
     /// Buffer expansion policy for use in owning_buffer,
@@ -15,7 +16,8 @@ namespace reio {
     ///
     /// @see        k_default_growth_factor
     ///
-    enum class growth_factor : uint32_t {
+    enum class growth_factor : uint32_t
+    {
         none = 1,               //< Buffer cannot expand anymore.
         tight = 2,              //< Buffer expands only as much as necessary.
         mult2x = 3              //< Buffer expands linearly, with double coefficient.
@@ -31,8 +33,8 @@ namespace reio {
     /// The go-to buffer for dynamic blob allocations that could be seen
     /// as a simpler in-codebase alternative to vector<byte>. @n
     ///
-    class owning_buffer final : public non_copyable {
-
+    class owning_buffer final : public non_copyable
+    {
     public:
 
         using alloc_ptr         = base_allocator*;

@@ -1,6 +1,7 @@
 #include "reio/buffers/owning_buffer.hpp"
 
-namespace reio {
+namespace reio
+{
 
     ///
     /// @brief      Default-initialize the buffer.
@@ -313,7 +314,8 @@ namespace reio {
     /// @return     Iterator before the first removed byte.
     ///
     owning_buffer::iterator
-    owning_buffer::erase(owning_buffer::const_iterator first, owning_buffer::const_iterator last) {
+    owning_buffer::erase(owning_buffer::const_iterator first, owning_buffer::const_iterator last)
+    {
         REIO_ASSERT(iter_within(first) && iter_within(last), "destination iterators are out of buffer bounds");
         REIO_ASSERT(first <= last, "can't erase from a misordered iterator pair");
 

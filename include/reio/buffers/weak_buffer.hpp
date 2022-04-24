@@ -5,7 +5,8 @@
 #include "../types.hpp"
 
 
-namespace reio {
+namespace reio
+{
 
     ///
     /// @brief      Non-owning fixed-size view of a contiguous byte sequence.
@@ -20,8 +21,8 @@ namespace reio {
     /// effectively decoupling logic from the exact implementation
     /// used for storing input data on which it may operate. @n
     ///
-    class weak_buffer final {
-
+    class weak_buffer final
+    {
     public:
 
         using size_type         = std::size_t;

@@ -5,12 +5,14 @@
 #include "./types.hpp"
 
 
-namespace reio {
+namespace reio
+{
 
     ///
     /// @brief      Base for allocator classes used by @c reio.
     ///
-    class base_allocator {
+    class base_allocator
+    {
     public:
         virtual ~base_allocator() = default;
         virtual byte* allocate(std::size_t size) = 0;
@@ -30,7 +32,8 @@ namespace reio {
         byte* allocate(std::size_t size) override;
         void deallocate(byte* ptr) override;
 
-        static inline default_allocator* get_default() noexcept {
+        static inline default_allocator* get_default() noexcept
+        {
             static default_allocator instance;
             return &instance;
         }
