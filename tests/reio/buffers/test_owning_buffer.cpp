@@ -286,6 +286,35 @@ TEST_CASE( "owning buffer provides partial access", "[buffer][owning_buffer]" ) 
 }
 
 
+TEST_CASE( "owning buffer supports unsafe resizing", "[buffer][owning_buffer]" ) {
+
+    std::array<std::uint8_t, 32> junk{ 0u };
+    std::ranges::generate(junk, [n = 0]() mutable { return ++n; });
+    owning_buffer buffer{ weak_buffer{ junk.data(), junk.size() } };
+
+    const auto old_data = buffer.data();
+    const auto old_length = buffer.length();
+    const auto old_capacity = buffer.capacity();
+
+    SECTION( "downwards (to zero)" ) {
+        buffer.resize_to_zero();
+
+        CHECK( buffer.data() == old_data );
+        CHECK( buffer.capacity() == old_capacity );
+
+        CHECK( buffer.length() == 0u );
+        CHECK( buffer.end() == buffer.begin() );
+    }
+
+    /// @todo implement test case for owning_buffer::resize_to_capacity()
+
+//    SECTION( "upwards (to capacity)" ) {
+//        // ...
+//    }
+
+}
+
+
 TEST_CASE( "owning buffer can be overwritten", "[buffer][owning_buffer]" ) {
 
     std::array<std::uint8_t, 10> junk{ 1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u, 9u, 10u };
@@ -558,6 +587,102 @@ TEST_CASE( "owning buffer can be inserted into", "[buffer][owning_buffer]" ) {
         CHECK( std::ranges::equal(buffer, result_1) );
         CHECK( end_1 == buffer.end() );
 
+    }
+
+}
+
+
+TEST_CASE( "owning buffer can be removed from", "[buffer][owning_buffer]" ) {
+
+    std::array<std::uint8_t, 12> junk{ 1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u, 9u, 10u, 11u, 12u };
+    owning_buffer buffer{ weak_buffer{ junk.data(), junk.size() } };
+
+    const auto old_data = buffer.data();
+    const auto old_length = buffer.length();
+    const auto old_capacity = buffer.capacity();
+
+    SECTION( "but the iterators must be ordered" ) {
+        CHECK_THROWS_AS( buffer.erase(buffer.end(), buffer.begin()), io_exception );
+        CHECK_THROWS_AS( buffer.erase(buffer.begin() + 2u, buffer.begin() + 1u), io_exception );
+    }
+
+    SECTION( "but the iterators must be within the buffer" ) {
+        CHECK_THROWS_AS( buffer.erase(nullptr, buffer.end()), io_exception );
+        CHECK_THROWS_AS( buffer.erase(buffer.begin(), nullptr), io_exception );
+        CHECK_THROWS_AS( buffer.erase(buffer.begin() - 1u, buffer.end()), io_exception );
+        CHECK_THROWS_AS( buffer.erase(buffer.begin(), buffer.end() + 1u), io_exception );
+        CHECK_THROWS_AS( buffer.erase(buffer.begin() - 1000u, buffer.end() + 3u), io_exception );
+    }
+
+    SECTION( "at the beginning" ) {
+        const auto end_0 = buffer.erase(buffer.begin(), buffer.begin());
+        const auto result_0 = { 1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u, 9u, 10u, 11u, 12u };
+
+        CHECK( end_0 == buffer.begin() );
+        CHECK( buffer.data() == old_data );
+        CHECK( buffer.length() == old_length );
+        CHECK( buffer.capacity() == old_capacity );
+        CHECK( std::ranges::equal(buffer, result_0) );
+
+
+        const auto end_1 = buffer.erase(buffer.begin(), buffer.begin() + 4u);
+        const auto result_1 = { 5u, 6u, 7u, 8u, 9u, 10u, 11u, 12u };
+
+        CHECK( end_1 == buffer.begin() );
+        CHECK( buffer.data() == old_data );
+        CHECK( buffer.length() == 8u );
+        CHECK( buffer.capacity() == old_capacity );
+        CHECK( std::ranges::equal(buffer, result_1) );
+
+
+        const auto end_2 = buffer.erase(buffer.begin(), buffer.end());
+
+        CHECK( end_2 == buffer.begin() );
+        CHECK( buffer.data() == old_data );
+        CHECK( buffer.length() == 0u );
+        CHECK( buffer.capacity() == old_capacity );
+    }
+
+    SECTION( "at the middle" ) {
+        const auto end_0 = buffer.erase(buffer.begin() + 2u, buffer.begin() + 2u);
+        const auto result_0 = { 1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u, 9u, 10u, 11u, 12u };
+
+        CHECK( end_0 == buffer.begin() + 2u );
+        CHECK( buffer.data() == old_data );
+        CHECK( buffer.length() == old_length );
+        CHECK( buffer.capacity() == old_capacity );
+        CHECK( std::ranges::equal(buffer, result_0) );
+
+
+        const auto end_1 = buffer.erase(buffer.begin() + 2u, buffer.begin() + 5u);
+        const auto result_1 = { 1u, 2u, 6u, 7u, 8u, 9u, 10u, 11u, 12u };
+
+        CHECK( end_1 == buffer.begin() + 2u );
+        CHECK( buffer.data() == old_data );
+        CHECK( buffer.length() == 9u );
+        CHECK( buffer.capacity() == old_capacity );
+        CHECK( std::ranges::equal(buffer, result_1) );
+    }
+
+    SECTION( "at the end" ) {
+        const auto end_0 = buffer.erase(buffer.end(), buffer.end());
+        const auto result_0 = { 1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u, 9u, 10u, 11u, 12u };
+
+        CHECK( end_0 == buffer.end() );
+        CHECK( buffer.data() == old_data );
+        CHECK( buffer.length() == old_length );
+        CHECK( buffer.capacity() == old_capacity );
+        CHECK( std::ranges::equal(buffer, result_0) );
+
+
+        const auto end_1 = buffer.erase(buffer.begin() + 8u, buffer.end());
+        const auto result_1 = { 1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u };
+
+        CHECK( end_1 == buffer.begin() + 8u );
+        CHECK( buffer.data() == old_data );
+        CHECK( buffer.length() == 8u );
+        CHECK( buffer.capacity() == old_capacity );
+        CHECK( std::ranges::equal(buffer, result_1) );
     }
 
 }

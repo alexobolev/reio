@@ -158,6 +158,31 @@ namespace reio {
     }
 
     ///
+    /// @brief      Move the end pointer to the beginning.
+    ///
+    /// Useful to rapidly reset the buffer length when there's
+    /// no need to delete the pre-existing contents or reallocate.
+    ///
+    void
+    owning_buffer::resize_to_zero() noexcept
+    {
+        m_end = m_begin;
+    }
+
+    ///
+    /// @brief      Move the end pointer to the allocation end.
+    ///
+    /// Useful to rapidly "expand" the buffer in an unsafe way
+    /// e.g. after inserting contents via a direct memcpy to data(),
+    /// which is an unsurprisingly common scenario with third-party code.
+    ///
+    void
+    owning_buffer::resize_to_capacity() noexcept
+    {
+        m_end = m_alloc_end;
+    }
+
+    ///
     /// @brief      Get a byte within the buffer, without bounds check.
     /// @param      index    Index of the byte.
     /// @return     Non-const reference to a byte at @c index.
@@ -279,6 +304,28 @@ namespace reio {
     owning_buffer::const_iterator owning_buffer::alloc_end() const noexcept { return m_alloc_end; }
     owning_buffer::const_iterator owning_buffer::alloc_cend() const noexcept { return m_alloc_end; }
 
+    ///
+    /// @brief      Remove a sequence from the buffer.
+    ///
+    /// @param      first   Iterator before the first byte to be removed.
+    /// @param      last    Iterator past the last byte to be removed.
+    ///
+    /// @return     Iterator before the first removed byte.
+    ///
+    owning_buffer::iterator
+    owning_buffer::erase(owning_buffer::const_iterator first, owning_buffer::const_iterator last) {
+        REIO_ASSERT(iter_within(first) && iter_within(last), "destination iterators are out of buffer bounds");
+        REIO_ASSERT(first <= last, "can't erase from a misordered iterator pair");
+
+        const iterator removal_start = begin() + (first - cbegin());
+        const difference_type removal_length = last - first;
+
+        std::shift_left(removal_start, end(), removal_length);
+        m_end -= removal_length;
+
+        return removal_start;
+    }
+
     owning_buffer::size_type
     owning_buffer::next_capacity(owning_buffer::size_type over) const
     {
@@ -326,5 +373,6 @@ namespace reio {
             m_alloc_end = allocation + new_capacity;
         }
     }
+
 
 }

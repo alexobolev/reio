@@ -74,6 +74,9 @@ namespace reio {
 
         void set_growth(growth_factor factor) noexcept;
 
+        void resize_to_zero() noexcept;
+        void resize_to_capacity() noexcept;
+
         [[nodiscard]] reference operator[](size_type index) noexcept;
         [[nodiscard]] value_type operator[](size_type index) const noexcept;
 
@@ -100,7 +103,11 @@ namespace reio {
         iterator overwrite(ContigIt src_begin, ContigIt src_end, const_iterator dest_begin);
 
         template<std::contiguous_iterator ContigIt>
-        pointer insert(ContigIt src_begin, ContigIt src_end, const_iterator dest_begin);
+        iterator insert(ContigIt src_begin, ContigIt src_end, const_iterator dest_begin);
+
+        iterator erase(const_iterator first, const_iterator last);
+
+
 
     private:
 
