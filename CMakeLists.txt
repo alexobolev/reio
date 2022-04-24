@@ -16,9 +16,13 @@ set(REIO_SOURCES
         ${REIO_INCLUDE_DIR}/reio/types.hpp
         ${REIO_INCLUDE_DIR}/reio/buffers/weak_buffer.hpp
         ${REIO_INCLUDE_DIR}/reio/buffers/owning_buffer.hpp
+        ${REIO_INCLUDE_DIR}/reio/streams/file_streams.hpp
+        ${REIO_INCLUDE_DIR}/reio/streams/streams.hpp
 
         ${REIO_SOURCE_DIR}/allocators.cpp
         ${REIO_SOURCE_DIR}/buffers/owning_buffer.cpp
+        ${REIO_SOURCE_DIR}/streams/file_streams.cpp
+        ${REIO_SOURCE_DIR}/streams/streams.cpp
         )
 
 
