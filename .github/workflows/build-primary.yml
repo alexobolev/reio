@@ -47,8 +47,8 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         shell: bash
         run: |
-          sudo apt update
-          sudo apt install gcc-11 g++-11
+          sudo apt-get update
+          sudo apt-get install gcc-11 g++-11
       - name: Configure CMake
         env:
           CC: ${{ matrix.cc }}
@@ -65,3 +65,12 @@ jobs:
         run: |
           cd cmake-build-${{ matrix.build_type }}
           ctest . --output-on-failure
+      - name: Archive test artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: tests-output
+          path: |
+            cmake-build-${{ matrix.build_type }}/Testing/Temporary/LastTest.log
+            cmake-build-${{ matrix.build_type }}/**/reio_tests.exe
+            cmake-build-${{ matrix.build_type }}/**/reio_tests.pdb
+            cmake-build-${{ matrix.build_type }}/**/reio_tests
