@@ -141,7 +141,7 @@ TEST_CASE( "memory input stream deserializes primitives", "[streams][memory_stre
     SECTION( "of single bytes" )
     {
         CHECK( 1 == stream.read_byte() );
-        CHECK( 1 == stream.read_byte() );
+        CHECK( 2 == stream.read_byte() );
         CHECK( 3 == stream.read_byte() );
         CHECK( 4 == stream.read_byte() );
     }
