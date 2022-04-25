@@ -4,12 +4,6 @@
 
 namespace reio
 {
-    enum struct seek_origin : int
-    {
-        begin = 1,
-        current = 2,
-        end = 3
-    };
 
     static constexpr int seek_origin_to_std(seek_origin origin) noexcept
     {

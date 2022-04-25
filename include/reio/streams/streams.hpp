@@ -8,6 +8,13 @@
 
 namespace reio
 {
+    enum struct seek_origin : int
+    {
+        begin = 1,
+        current = 2,
+        end = 3
+    };
+
 
     class base_stream
     {

@@ -44,6 +44,10 @@ namespace reio
     };
 
 
+    ///
+    /// @brief      Implementation of @c input_stream using
+    ///             a CRT file handle as a data sink.
+    ///
     class file_output_stream final
         : public output_stream
         , public non_copyable
