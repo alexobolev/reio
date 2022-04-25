@@ -31,6 +31,8 @@ namespace reio
         memory_input_stream& operator=(memory_input_stream&& other) noexcept;
 
         [[nodiscard]] weak_buffer view() const noexcept;
+        [[nodiscard]] int64_t capacity() const noexcept;
+        [[nodiscard]] growth_factor growth() const noexcept;
 
         //* Implementation of base_stream.
         //* ========================================
@@ -70,6 +72,8 @@ namespace reio
         memory_output_stream& operator=(memory_output_stream&& other) noexcept;
 
         [[nodiscard]] weak_buffer view() const noexcept;
+        [[nodiscard]] int64_t capacity() const noexcept;
+        [[nodiscard]] growth_factor growth() const noexcept;
 
         //* Implementation of base_stream.
         //* ========================================

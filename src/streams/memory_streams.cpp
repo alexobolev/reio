@@ -20,7 +20,7 @@ namespace reio
         {
             const auto new_position = position + offset;
             REIO_ASSERT(new_position >= 0, "can't seek offset below the underlying buffer's start");
-            REIO_ASSERT(new_position < length, "can't seek offset beyond the underlying buffer's end");
+            REIO_ASSERT(new_position <= length, "can't seek offset beyond the underlying buffer's end");
             return new_position;
         }
         if constexpr (Origin == seek_origin::end)
@@ -68,9 +68,22 @@ namespace reio
         return *this;
     }
 
-    weak_buffer memory_input_stream::view() const noexcept
+    weak_buffer
+    memory_input_stream::view() const noexcept
     {
         return m_buffer.view();
+    }
+
+    int64_t
+    memory_input_stream::capacity() const noexcept
+    {
+        return static_cast<int64_t>(m_buffer.capacity());
+    }
+
+    growth_factor
+    memory_input_stream::growth() const noexcept
+    {
+        return m_buffer.growth();
     }
 
     int64_t
@@ -164,9 +177,22 @@ namespace reio
 
     memory_output_stream::~memory_output_stream() = default;
 
-    weak_buffer memory_output_stream::view() const noexcept
+    weak_buffer
+    memory_output_stream::view() const noexcept
     {
         return m_buffer.view();
+    }
+
+    int64_t
+    memory_output_stream::capacity() const noexcept
+    {
+        return static_cast<int64_t>(m_buffer.capacity());
+    }
+
+    growth_factor
+    memory_output_stream::growth() const noexcept
+    {
+        return m_buffer.growth();
     }
 
     int64_t
@@ -209,7 +235,20 @@ namespace reio
         REIO_ASSERT(input.data() != nullptr, "can't write to output streams from nullptr");
         REIO_ASSERT(input.length() > 0, "can't write zero bytes to output streams");
 
-        m_buffer.overwrite(input.begin(), input.end(), m_buffer.end());
+        // artificially limit the write length for fixed-size streams
+        // to change the behaviour on overflow from failure to partial write
+        if (m_buffer.growth() == growth_factor::none)
+        {
+            const auto remaining_capacity = m_buffer.capacity() - m_position;
+            const auto write_length = std::min<int64_t>(input.length(), remaining_capacity);
+
+            m_buffer.overwrite(input.begin(), input.begin() + write_length, m_buffer.begin() + m_position);
+            m_position += write_length;
+
+            return write_length;
+        }
+
+        m_buffer.overwrite(input.begin(), input.end(), m_buffer.begin() + m_position);
         m_position += input.length();
 
         return input.length();
