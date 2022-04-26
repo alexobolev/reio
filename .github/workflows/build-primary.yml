@@ -68,7 +68,7 @@ jobs:
       - name: Archive test artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: tests-output
+          name: tests-${{ matrix.os }}-${{ matrix.build_type }}
           path: |
             cmake-build-${{ matrix.build_type }}/Testing/Temporary/LastTest.log
             cmake-build-${{ matrix.build_type }}/**/reio_tests.exe
