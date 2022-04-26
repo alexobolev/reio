@@ -11,6 +11,10 @@
 namespace reio
 {
 
+    ///
+    /// @brief      Implementation of @c input_stream using
+    ///             an @c owning_buffer as a data source.
+    ///
     class memory_input_stream final
         : public input_stream
         , public non_copyable
@@ -51,6 +55,10 @@ namespace reio
     };
 
 
+    ///
+    /// @brief      Implementation of @c input_stream using
+    ///             an @c owning_buffer as a data sink.
+    ///
     class memory_output_stream final
         : public output_stream
         , public non_copyable

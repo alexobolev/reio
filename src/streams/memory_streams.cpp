@@ -33,6 +33,12 @@ namespace reio
 //        return std::numeric_limits<int64_t>::min();
     }
 
+    ///
+    /// @brief      Initialize stream by copying a block of data into it.
+    ///
+    /// @param      source_view    View of the data block to copy into the underlying buffer
+    /// @param      alloc          Allocator which should be used by the buffer.
+    ///
     memory_input_stream::memory_input_stream(weak_buffer source_view, base_allocator* alloc)
         : m_buffer{ source_view, alloc }
         , m_position{ 0u }
@@ -42,6 +48,10 @@ namespace reio
         m_buffer.set_growth(growth_factor::none);
     }
 
+    ///
+    /// @brief      Initialize stream by acquiring ownership of an owning_buffer.
+    /// @param      source_buffer    Buffer to move into the stream.
+    ///
     memory_input_stream::memory_input_stream(owning_buffer &&source_buffer)
         : m_buffer{ std::move(source_buffer) }
         , m_position{ 0u }

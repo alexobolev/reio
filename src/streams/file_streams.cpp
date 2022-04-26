@@ -55,12 +55,21 @@ namespace reio
 
 
 
+    ///
+    /// @brief      Initialize stream by acquiring ownership of a file handle.
+    ///             The handle is closed by the stream.
+    /// @param      handle   Externally-opened file handle.
+    ///
     file_input_stream::file_input_stream(std::FILE *handle)
         : m_handle{ handle }
     {
         REIO_ASSERT(handle != nullptr, "can't initialize file stream with a null handle");
     }
 
+    ///
+    /// @brief      Initialize stream by opening a physical file.
+    /// @param      path    Path to the file which should be used for input.
+    ///
     file_input_stream::file_input_stream(std::string_view path)
     {
         m_handle = std::fopen(path.data(), "rb");
@@ -124,12 +133,21 @@ namespace reio
 
 
 
+    ///
+    /// @brief      Initialize stream by acquiring ownership of a file handle.
+    ///             The handle is closed by the stream.
+    /// @param      handle   Externally-opened file handle.
+    ///
     file_output_stream::file_output_stream(std::FILE *handle)
         : m_handle{ handle }
     {
         REIO_ASSERT(handle != nullptr, "can't initialize file stream with a null handle");
     }
 
+    ///
+    /// @brief      Initialize stream by opening a physical file.
+    /// @param      path    Path to the file which should be used for output.
+    ///
     file_output_stream::file_output_stream(std::string_view path)
     {
         m_handle = std::fopen(path.data(), "wb");
