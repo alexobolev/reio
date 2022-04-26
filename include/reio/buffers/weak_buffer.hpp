@@ -21,6 +21,8 @@ namespace reio
     /// effectively decoupling logic from the exact implementation
     /// used for storing input data on which it may operate. @n
     ///
+    /// @ingroup    buffers
+    ///
     class weak_buffer final
     {
     public:

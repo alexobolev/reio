@@ -33,6 +33,8 @@ namespace reio
     /// The go-to buffer for dynamic blob allocations that could be seen
     /// as a simpler in-codebase alternative to vector<byte>. @n
     ///
+    /// @ingroup    buffers
+    ///
     class owning_buffer final : public non_copyable
     {
     public:

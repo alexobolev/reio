@@ -1,8 +1,14 @@
 #ifndef REIO_FILE_STREAMS_HPP
 #define REIO_FILE_STREAMS_HPP
 
+
+#ifndef REIO_OPTION_NO_INCLUDES
+
 #include <cstdio>
 #include <string>
+
+#endif
+
 #include "./streams.hpp"
 
 
@@ -12,6 +18,8 @@ namespace reio
     ///
     /// @brief      Implementation of @c input_stream using
     ///             a CRT file handle as a data source.
+    ///
+    /// @ingroup    streams
     ///
     class file_input_stream final
         : public input_stream
@@ -47,6 +55,8 @@ namespace reio
     ///
     /// @brief      Implementation of @c input_stream using
     ///             a CRT file handle as a data sink.
+    ///
+    /// @ingroup    streams
     ///
     class file_output_stream final
         : public output_stream
